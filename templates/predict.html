@@ -1,0 +1,16 @@
+<!-- templates/predict.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Weather Prediction</title>
+</head>
+<body>
+    {% if error %}
+        <h1>{{ error }}</h1>
+    {% else %}
+        <h1>Weather Prediction for {{ date }} at {{ location }} at {{ time }}</h1>
+        <p>The weather is predicted to be: {{ weather }} (Probability: {{ probability|floatformat:2 }})</p>
+    {% endif %}
+</body>
+</html>
