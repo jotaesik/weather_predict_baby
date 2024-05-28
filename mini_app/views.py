@@ -1,50 +1,41 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 import numpy as np
-from tensorflow.keras.models import load_model
-import pandas as pd
-from sklearn.preprocessing import MinMaxScaler
+import tensorflow as tf
 
-def index(request):
-    return render(request, 'index.html')
-#입력된날짜,시간
-def predict(request):
-    datetime_input = request.GET.get('datetime_input')  # 'yyyy-mm-dd HH:MM'
-    # date_A = request.GET.get('date_A')
-    # time_C = request.GET.get('time_C')
-#모델로드
-    model = load_model('mini_app/models/mini_model.joblib')
+# LSTM 모델을 불러오는 함수
+def load_lstm_model():
+    # 모델을 불러올 경로 설정
+    model_path = '/home/encore/mini_project/mini_app/models/lstm_model.h5'
+    # 모델 불러오기
+    model = tf.keras.models.load_model(model_path)
+    return model
 
-#전처리 데이터로드
-    df = pd.read_csv('mini_app/data/mini_data.csv')
-    df['Datetime'] = pd.to_datetime(df['날짜'])
-    df.set_index('Datetime', inplace=True)
-    # df['Date'] = pd.to_datetime(df['Date'])
-    # df['Time'] = pd.to_datetime(df['Time']).dt.time
-    # df.set_index(['Date', 'Location', 'Time'], inplace=True)
+# 날짜만 입력받아 예측을 수행하는 뷰 함수
+def weather_prediction(request):
+    if request.method == 'POST':
+        # POST 요청에서 날짜 데이터 가져오기
+        date_input = request.POST.get('date_input')
+        
+        # LSTM 모델 불러오기
+        lstm_model = load_lstm_model()
+        
+        # 예측을 위한 데이터 준비 (전처리)
+        processed_data = preprocess_data(date_input)
+        
+        # 예측 수행
+        prediction = lstm_model.predict(processed_data)
+        
+        # 예측 결과를 사용자에게 보여주기
+        # render 함수를 사용하여 predict.html을 렌더링하고, 예측 결과를 함께 전달
+        return render(request, 'predict.html', {'prediction': prediction})
+    else:
+        # GET 요청 시 index.html 렌더링
+        return render(request, 'index.html')
 
-#입력된날자,지역,시간에해당하는 데이터찾기
-
-    try:
-        input_data = df.loc[pd.to_datetime(datetime_input)]
-        # input_data = df.loc[(pd.to_datetime(date_A), location_B, pd.to_datetime(time_C).time())]
-    except KeyError:
-        return render(request, 'predict.html', {'error': '데이터없수다'})
-
-#데이터 전처리 < 넣어야하나?
-
-    values = input_data.values.reshape(-1, 1)
-    scaler = MinMaxScaler(feature_range=(0,1))
-    scaled_data = scaler.fit_transform(values)
-
-#예측을위한 데이터준비(최근 365일차)
-
-    recent_data = scaled_data.reshape(1, 365, 1)
-
-#예측수행
-
-    prediction = model.predict(recent_data)
-    probability = prediction[0][0]
-    weather = '비' if probability > 0.5 else '맑음'
-
-    # return render(request, 'predict.html', {'wether':weather, 'probability':probability,'date':date_A,'location':location_B,'time':time_C})
-    return render(request, 'predict.html', {'weather': weather, 'probability': probability, 'datetime_input': datetime_input})
+# 데이터 전처리 함수 (필요에 따라 구현)
+def preprocess_data(date_input):
+    # 날짜 데이터를 모델 입력 형식에 맞게 전처리
+    # 예시: 날짜 데이터를 숫자 또는 특정 형식으로 변환하여 모델에 입력할 수 있는 형태로 가공
+    processed_data = ...
+    return processed_data

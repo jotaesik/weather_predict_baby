@@ -1,16 +1,13 @@
-<!-- templates/predict.html -->
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Weather Prediction</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>날씨 예측 결과</title>
 </head>
 <body>
-    {% if error %}
-        <h1>{{ error }}</h1>
-    {% else %}
-        <h1>Weather Prediction for {{ date }} at {{ location }} at {{ time }}</h1>
-        <p>The weather is predicted to be: {{ weather }} (Probability: {{ probability|floatformat:2 }})</p>
-    {% endif %}
+    <h1>날씨 예측 결과</h1>
+    <p>입력한 날짜에 대한 날씨 예측 결과는 다음과 같습니다:</p>
+    <p>예측 결과: {{ prediction }}</p>
 </body>
 </html>
