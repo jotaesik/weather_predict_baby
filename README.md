@@ -15,4 +15,3 @@
 - **Machine Learning**: TensorFlow, Keras
 - **Data Processing**: Pandas, NumPy
 
-## 📂 프로젝트 구조
